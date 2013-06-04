@@ -5,6 +5,7 @@
 //  Created by Héctor Ramos on 5/04/12.
 //
 
+#import <FacebookSDK/FacebookSDK.h>
 #import "AppDelegate.h"
 
 #import "Reachability.h"
@@ -64,18 +65,21 @@
 
     // ****************************************************************************
     // Parse initialization
-    // [Parse setApplicationId:@"APPLICATION_ID" clientKey:@"CLIENT_KEY"];
+    [Parse setApplicationId:@"X" clientKey:@"X"];
     [PFFacebookUtils initializeFacebook];
     // ****************************************************************************
     
     // Track app open.
     [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
 
+    // Test for the number of badge notifications, clear thems if > 0 and loas current
+    // PFInstallation, which is kind of instance installation on the cloud
     if (application.applicationIconBadgeNumber != 0) {
         application.applicationIconBadgeNumber = 0;
         [[PFInstallation currentInstallation] saveInBackground];
     }
 
+    // This creates an ACL without any permissions
     PFACL *defaultACL = [PFACL ACL];
     // Enable public read access by default, with any newly created PFObjects belonging to the current user
     [defaultACL setPublicReadAccess:YES];
@@ -195,7 +199,7 @@
 }
 
 
-#pragma mark - NSURLConnectionDataDelegate
+#pragma mark - Testing pragma mark
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
     _data = [[NSMutableData alloc] init];
@@ -302,6 +306,8 @@
 
 #pragma mark - ()
 
+// This basically creates an interface programatically, without using Storyboards
+// or xib files. This is compatible with all versions of iOS. Storyboards only with iOS 5+
 - (void)setupAppearance {
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackOpaque];
     
@@ -334,7 +340,10 @@
     [[UISearchBar appearance] setTintColor:[UIColor colorWithRed:32.0f/255.0f green:19.0f/255.0f blue:16.0f/255.0f alpha:1.0f]];
 }
 
+// This checks for reachability, first the Parse API server, then the user Internet access
+// that can be via data connection or Local WiFi
 - (void)monitorReachability {
+    // This is an Event Dispatcher-like pattern
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:ReachabilityChangedNotification object:nil];
     
     self.hostReach = [Reachability reachabilityWithHostName:@"api.parse.com"];
@@ -353,7 +362,8 @@
     NSDictionary *remoteNotificationPayload = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
     if (remoteNotificationPayload) {
         [[NSNotificationCenter defaultCenter] postNotificationName:PAPAppDelegateApplicationDidReceiveRemoteNotification object:nil userInfo:remoteNotificationPayload];
-        
+
+        // This gets the current user if any. Acts kind of a Singleton, where only one user can be active
         if (![PFUser currentUser]) {
             return;
         }
@@ -368,11 +378,17 @@
         // If the push notification payload references a user, we will attempt to push their profile into view
         NSString *fromObjectId = [remoteNotificationPayload objectForKey:kPAPPushPayloadFromUserObjectIdKey];
         if (fromObjectId && fromObjectId.length > 0) {
+            // Creates a query to look for the user
             PFQuery *query = [PFUser query];
             query.cachePolicy = kPFCachePolicyCacheElseNetwork;
+
+            // Gets user in background, using closure to process it asynchronously
             [query getObjectInBackgroundWithId:fromObjectId block:^(PFObject *user, NSError *error) {
                 if (!error) {
+                    // If the user exists, we can load the AccountViewController
                     UINavigationController *homeNavigationController = self.tabBarController.viewControllers[PAPHomeTabBarItemIndex];
+
+                    // Changes top navigation
                     self.tabBarController.selectedViewController = homeNavigationController;
                     
                     PAPAccountViewController *accountViewController = [[PAPAccountViewController alloc] initWithStyle:UITableViewStylePlain];

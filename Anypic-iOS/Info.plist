@@ -50,14 +50,14 @@
 			<string>Icon@2x</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>fbFACEBOOK_APP_ID</string>
+				<string>fb412825665483317</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1.4</string>
 	<key>FacebookAppID</key>
-	<string>FACEBOOK_APP_ID</string>
+	<string>412825665483317</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.photography</string>
 	<key>LSRequiresIPhoneOS</key>
