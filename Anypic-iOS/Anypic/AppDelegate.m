@@ -220,12 +220,17 @@
     return self.networkStatus != NotReachable;
 }
 
+// This loads the facebook login view controller
 - (void)presentLoginViewControllerAnimated:(BOOL)animated {
     PAPLogInViewController *loginViewController = [[PAPLogInViewController alloc] init];
+
+    // Flow will come back here by setting 'self' as the delegate
     [loginViewController setDelegate:self];
     loginViewController.fields = PFLogInFieldsFacebook;
     loginViewController.facebookPermissions = @[ @"user_about_me" ];
-    
+
+    // 'presentModalViewController' will trigger the typical page fold animation
+    // characteristic of the iOS apps, if you want it so, of course
     [self.welcomeViewController presentModalViewController:loginViewController animated:NO];
 }
 

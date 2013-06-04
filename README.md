@@ -1,3 +1,7 @@
+# About this fork
+
+This fork contains changes and comments made by me as a way of learning to program iOS applications.
+
 # Anypic
 
 Anypic is the easiest way to share photos with your friends. Get the app and share your fun photos with the world. [Anypic](https://anypic.org) is fully powered by [Parse](https://parse.com). 
